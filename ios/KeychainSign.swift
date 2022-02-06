@@ -58,27 +58,24 @@ class KeychainSign: NSObject {
                     ]
         
                     var error: Unmanaged<CFError>?
-                    let privateKey = SecKeyCreateRandomKey(attributes as CFDictionary, &error)
+                    guard let privateKey = SecKeyCreateRandomKey(attributes as CFDictionary, &error) else {
+                        reject("PRIVATE_KEY_ERROR", CFErrorCopyDescription(error!.takeRetainedValue()) as String, nil)
+                        return
+                    }
     
-//                    guard let privateKey = SecKeyCreateRandomKey(attributes as CFDictionary, &error) else {
-//                        throw error!.takeRetainedValue() as Error
-//                    }
         
-//                    let e = CFErrorCopyDescription(error!.takeRetainedValue())
+                    guard let publicKey = SecKeyCopyPublicKey(privateKey),
+                        let publicKeyExportable = SecKeyCopyExternalRepresentation(publicKey, nil) else {
+                        reject("PUBLIC_KEY_ERROR", "Public key is not exportable!", nil)
+                        return
+                    }
         
-                    print("ERROR: \(privateKey)")
-//                    resolve(privateKey)
-//                    var e =
-//
-//                    resolve(CFErrorCopyDescription(e))
-//                    let publicKey = SecKeyCopyPublicKey(privateKey!)
-        
-//                    guard ,
-//                        let publicKeyExportable = SecKeyCopyExternalRepresentation(publicKey, nil) else {
-//                        return
-//                    }
-        
-//                    resolve(publicKey)
+                    let pubKey = publicKeyExportable as Data;
+                    let c = pubKey.base64EncodedString(options: [])
+                
+                    
+                    print("good: \(c)")
+                    resolve(c)
         
         
         
