@@ -8,6 +8,7 @@ Supported sign algorithms - `"ES256", "ES384", "ES512", "RS256", "RS384", "RS512
 
 ```sh
 npm install react-native-keychain-sign
+cd ios && pod install
 ```
 
 ## Usage
