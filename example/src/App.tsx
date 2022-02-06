@@ -1,13 +1,20 @@
 import * as React from 'react';
 
 import { StyleSheet, View, Text } from 'react-native';
-import { multiply } from 'react-native-keychain-sign';
+import { multiply, signData } from 'react-native-keychain-sign';
 
 export default function App() {
   const [result, setResult] = React.useState<number | undefined>();
 
   React.useEffect(() => {
     multiply(3, 7).then(setResult);
+
+    console.log('signData -', signData);
+
+    signData('tag for key', 'algo', 'data to sign').then((res) => {
+      console.log('result -', res);
+    }).catch(e => console.log("erro ", e))
+
   }, []);
 
   return (
