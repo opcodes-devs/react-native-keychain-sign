@@ -12,12 +12,11 @@ export default function App() {
   const algorithm = "ES256"
 
   const generateKeys = () => {
-    genKeysAndSaveToKeychain(tag, false).then((res) => {
-      console.log('res -', res);
-      setPublicKey(res)
-    });
+    genKeysAndSaveToKeychain(tag, false).then(setPublicKey);
     signData(tag, algorithm, dataToSign).then(setSignedData);
   }
+
+  console.log({ tag, dataToSign, publicKey, signedData })
 
   return (
     <View style={styles.container}>
