@@ -1,3 +1,5 @@
+import Security
+
 @objc(KeychainSign)
 class KeychainSign: NSObject {
 
@@ -25,21 +27,87 @@ class KeychainSign: NSObject {
     }
 
     @objc(signData:withAlgorithm:data:withResolver:withRejecter:)
-    func signData(tag: String, algorithm: SecKeyAlgorithm, data: Data,
-                  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Data {
-
-            let privateKey = loadKey(name: tag)
-            guard SecKeyIsAlgorithmSupported(privateKey!, .sign, algorithm) else {
-                let error = "HEllo".data(using: .utf8)!
-                return error
-            }
-
-            var error: Unmanaged<CFError>?
-            let signature = SecKeyCreateSignature(privateKey!, algorithm,
-                                          data as CFData,
-                                          &error) as Data?
-
-            return signature!
+    func signData(tag: String, algorithm: String, data: String,
+                  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void {
+        
+        
+                    let requiresBiometry = false
+                    let flags: SecAccessControlCreateFlags
+                    if #available(iOS 11.3, *) {
+                        flags = requiresBiometry ?
+                            [.privateKeyUsage, .biometryCurrentSet] : .privateKeyUsage
+                    } else {
+                        flags = requiresBiometry ?
+                            [.privateKeyUsage, .touchIDCurrentSet] : .privateKeyUsage
+                    }
+                    let access =
+                        SecAccessControlCreateWithFlags(kCFAllocatorDefault,
+                                                        kSecAttrAccessibleWhenUnlockedThisDeviceOnly,
+                                                        flags,
+                                                        nil)!
+                    let name = tag.data(using: .utf8)!
+                    let attributes: [String: Any] = [
+                        kSecAttrKeyType as String           : kSecAttrKeyTypeEC,
+                        kSecAttrKeySizeInBits as String     : 256,
+                        kSecAttrTokenID as String           : kSecAttrTokenIDSecureEnclave,
+                        kSecPrivateKeyAttrs as String : [
+                            kSecAttrIsPermanent as String       : true,
+                            kSecAttrApplicationTag as String    : name,
+                            kSecAttrAccessControl as String     : access
+                        ]
+                    ]
+        
+                    var error: Unmanaged<CFError>?
+                    let privateKey = SecKeyCreateRandomKey(attributes as CFDictionary, &error)
+    
+//                    guard let privateKey = SecKeyCreateRandomKey(attributes as CFDictionary, &error) else {
+//                        throw error!.takeRetainedValue() as Error
+//                    }
+        
+//                    let e = CFErrorCopyDescription(error!.takeRetainedValue())
+        
+                    print("ERROR: \(privateKey)")
+//                    resolve(privateKey)
+//                    var e =
+//
+//                    resolve(CFErrorCopyDescription(e))
+//                    let publicKey = SecKeyCopyPublicKey(privateKey!)
+        
+//                    guard ,
+//                        let publicKeyExportable = SecKeyCopyExternalRepresentation(publicKey, nil) else {
+//                        return
+//                    }
+        
+//                    resolve(publicKey)
+        
+        
+        
+        
+        
+        
+        
+//        let privateKey = loadKey(name: tag)
+//
+//
+//        if privateKey == nil {
+//            reject("PRIVATE_KEY_UNDEFINED", "You should call genKeysAndSaveToKeychain func first!", nil)
+//            return
+//        }
+//
+//
+//        resolve(privateKey)
+            
+//            guard SecKeyIsAlgorithmSupported(privateKey!, .sign, algorithm) else {
+//                let error = "HEllo".data(using: .utf8)!
+//                return error
+//            }
+//
+//            var error: Unmanaged<CFError>?
+//            let signature = SecKeyCreateSignature(privateKey!, algorithm,
+//                                          data as CFData,
+//                                          &error) as Data?
+//
+//            return signature!
         }
     
     //    static func genKeysAndSaveToKeychain(name: String,
