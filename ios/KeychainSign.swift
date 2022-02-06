@@ -24,7 +24,7 @@ class KeychainSign: NSObject {
         return (item as! SecKey)
     }
 
-    @objc(signData:withB:withResolver:withRejecter:)
+    @objc(signData:withAlgorithm:data:withResolver:withRejecter:)
     func signData(tag: String, algorithm: SecKeyAlgorithm, data: Data,
                   resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Data {
 

@@ -20,3 +20,7 @@ const KeychainSign = NativeModules.KeychainSign
 export function multiply(a: number, b: number): Promise<number> {
   return KeychainSign.multiply(a, b);
 }
+
+export function signData(tag: string, alg: string, data: string): Promise<string> {
+  return KeychainSign.signData(tag, alg, data);
+}
