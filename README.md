@@ -25,6 +25,21 @@ import { genKeysAndSaveToKeychain, signData } from "react-native-keychain-sign";
   const signedData = await signData(tag, algorithm, dataToSign)
 ```
 
+## API
+
+`signData`
+| parameter | type   | required/optional | Description           |
+|-----------|--------|-------------------|-----------------------|
+| tag       | string | required          | Tag name for keychain |
+| alg       | string | required          | Algorithm name        |
+| data      | string | required          | String to encode      |
+
+`genKeysAndSaveToKeychain`
+| parameter | type   | required/optional | Description           |
+|-----------|--------|-------------------|-----------------------|
+| tag       | string | required          | Tag name for keychain |
+| requiresBiometry       | boolean | optional          | Requires biometry check or not        |
+
 ## Contributing
 
 See the [contributing guide](CONTRIBUTING.md) to learn how to contribute to the repository and the development workflow.
