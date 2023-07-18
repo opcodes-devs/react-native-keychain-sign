@@ -58,8 +58,8 @@ class KeychainSign: NSObject {
         }
     }
     
-    @objc(genKeysAndSaveToKeychain:withRequiresBiometry:withResolver:withRejecter:)
-    func genKeysAndSaveToKeychain(tag: String, requiresBiometry: Bool = false, resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void {
+    @objc(generateKeys:withRequiresBiometry:withResolver:withRejecter:)
+    func generateKeys(tag: String, requiresBiometry: Bool = false, resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void {
         
         let privateKey = loadKey(name: tag)
         if privateKey != nil {

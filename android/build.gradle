@@ -7,7 +7,7 @@ buildscript {
         }
 
         dependencies {
-            classpath 'com.android.tools.build:gradle:3.5.3'
+            classpath 'com.android.tools.build:gradle:7.0.2'
         }
     }
 }
@@ -19,10 +19,10 @@ def safeExtGet(prop, fallback) {
 }
 
 android {
-    compileSdkVersion safeExtGet('KeychainSign_compileSdkVersion', 29)
+    compileSdkVersion safeExtGet('KeychainSign_compileSdkVersion', 31)
     defaultConfig {
-        minSdkVersion safeExtGet('KeychainSign_minSdkVersion', 16)
-        targetSdkVersion safeExtGet('KeychainSign_targetSdkVersion', 29)
+        minSdkVersion safeExtGet('KeychainSign_minSdkVersion', 31)
+        targetSdkVersion safeExtGet('KeychainSign_targetSdkVersion', 31)
         versionCode 1
         versionName "1.0"
 
@@ -39,6 +39,12 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+    packagingOptions {
+        pickFirst 'lib/arm64-v8a/libc++_shared.so'
+        pickFirst 'lib/armeabi-v7a/libc++_shared.so'
+        pickFirst 'lib/x86/libc++_shared.so'
+        pickFirst 'lib/x86_64/libc++_shared.so'
     }
 }
 

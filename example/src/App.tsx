@@ -1,28 +1,36 @@
 import * as React from 'react';
 
 import { StyleSheet, View, Text, Button } from 'react-native';
-import { genKeysAndSaveToKeychain, signData, getPublicKeyByTag } from 'react-native-keychain-sign';
+import { generateKeys, signData, getPublicKeyByTag } from 'react-native-keychain-sign';
 
 export default function App() {
   const [publicKey, setPublicKey] = React.useState<string | undefined>();
   const [signedData, setSignedData] = React.useState<string | undefined>();
 
-  const tag = "app.com3"
+  const tag = "app.com5"
   const dataToSign = "lala"
   const algorithm = "ES256"
 
-  const generateKeys = () => {
+  const getKeysAndSign = () => {
       getPublicKeyByTag(tag)
       .then((k)=>{
         console.log('Got Key from Store')
         return k
       }).catch(()=>{
-        return genKeysAndSaveToKeychain(tag, false)
+        console.log("Gonna genreate")
+        return generateKeys(tag, false)
+      })
+      .then(()=>{
+        return getPublicKeyByTag(tag)
       })
       .then(setPublicKey)
+      .then(()=>{
+
+      return signData(dataToSign,tag, algorithm)
+
+      }).then(setSignedData);      
 
     //genKeysAndSaveToKeychain(tag, false).then(setPublicKey);
-    signData(dataToSign,tag, algorithm).then(setSignedData);
   }
     console.log({ tag, dataToSign, publicKey, signedData })
 
@@ -32,7 +40,7 @@ export default function App() {
       <Text>Public key: {publicKey}</Text>
       <Text>data to sign: {dataToSign}</Text>
       <Text>signed data: {signedData}</Text>
-      <Button title="Generate and sign" onPress={generateKeys} />
+      <Button title="Generate and sign" onPress={getKeysAndSign} />
     </View>
   );
 }
