@@ -57,41 +57,6 @@ class KeychainSign: NSObject {
             return .ecdsaSignatureMessageX962SHA256
         }
     }
-
-    @objc(signData:withAlgorithm:data:withResolver:withRejecter:)
-    func signData(tag: String, algorithm: String, data: String,
-                  resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void {
-
-        let privateKey = loadKey(name: tag)
-
-        if privateKey == nil {
-            reject("PRIVATE_KEY_ERROR", "Private key not found!", nil)
-            return
-        }
-        
-        let algo = getAlgorithm(name: algorithm)
-        
-        if algo == nil {
-            reject("ALGO_ERROR", "Algorithm not found!", nil)
-            return
-        }
-            
-        guard SecKeyIsAlgorithmSupported(privateKey!, .sign, algo!) else {
-            reject("ALGO_ERROR", "Algorithm is not supported!", nil)
-            return
-        }
-
-        var error: Unmanaged<CFError>?
-        let signature = SecKeyCreateSignature(privateKey!, algo!,
-                                              data.data(using: .utf8)! as CFData,
-                                          &error) as Data?
-        
-        if signature == nil {
-            reject("SIGN_ERROR", "Signature can't be created!", nil)
-        }
-        
-        resolve(signature!.base64EncodedString())
-    }
     
     @objc(genKeysAndSaveToKeychain:withRequiresBiometry:withResolver:withRejecter:)
     func genKeysAndSaveToKeychain(tag: String, requiresBiometry: Bool = false, resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void {
@@ -158,5 +123,50 @@ class KeychainSign: NSObject {
 
         let pubKeyBuffer = publicKeyExportable as Data;
         return pubKeyBuffer.base64EncodedString(options: [])
+    }
+
+    @objc(getPublicKeyByTag:withResolver:withRejecter:)
+    func getPublicKeyByTag(tag: String,
+                       resolve: RCTPromiseResolveBlock,
+                       reject: RCTPromiseRejectBlock) -> Void {
+        guard let privateKey = loadKey(name: tag) else {
+            reject("PRIVATE_KEY_ERROR", "Private key not found!", nil)
+            return
+        }
+        
+        guard let pubKey = getPublicKey(privateKey: privateKey) else {
+            reject("PUBLIC_KEY_ERROR", "Public key is not exportable!", nil)
+            return
+        }
+        
+        resolve(pubKey)
+    }
+    @objc(signData:withTag:withAlgorithm:withResolver:withRejecter:)
+    func signData(data: String, tag: String, algorithm: String,
+                resolve:RCTPromiseResolveBlock, reject:RCTPromiseRejectBlock) -> Void {
+        guard let privateKey = loadKey(name: tag) else {
+            reject("PRIVATE_KEY_ERROR", "Private key not found!", nil)
+            return
+        }
+        
+        guard let algo = getAlgorithm(name: algorithm) else {
+            reject("ALGO_ERROR", "Algorithm not found!", nil)
+            return
+        }
+        
+        guard SecKeyIsAlgorithmSupported(privateKey, .sign, algo) else {
+            reject("ALGO_ERROR", "Algorithm is not supported!", nil)
+            return
+        }
+        
+        var error: Unmanaged<CFError>?
+        guard let signature = SecKeyCreateSignature(privateKey, algo,
+                                                    data.data(using: .utf8)! as CFData,
+                                                    &error) as Data? else {
+            reject("SIGN_ERROR", "Signature can't be created!", nil)
+            return
+        }
+        
+        resolve(signature.base64EncodedString())
     }
 }

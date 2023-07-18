@@ -24,3 +24,6 @@ export function signData(tag: string, alg: string, data: string): Promise<string
 export function genKeysAndSaveToKeychain(tag: string, requiresBiometry?: boolean): Promise<string> {
   return KeychainSign.genKeysAndSaveToKeychain(tag, requiresBiometry);
 }
+export function getPublicKeyByTag(tag: string): Promise<string> {
+  return KeychainSign.getPublicKeyByTag(tag);
+}

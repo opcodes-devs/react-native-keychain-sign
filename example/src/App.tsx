@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { StyleSheet, View, Text, Button } from 'react-native';
-import { genKeysAndSaveToKeychain, signData } from 'react-native-keychain-sign';
+import { genKeysAndSaveToKeychain, signData, getPublicKeyByTag } from 'react-native-keychain-sign';
 
 export default function App() {
   const [publicKey, setPublicKey] = React.useState<string | undefined>();
@@ -12,11 +12,19 @@ export default function App() {
   const algorithm = "ES256"
 
   const generateKeys = () => {
-    genKeysAndSaveToKeychain(tag, false).then(setPublicKey);
-    signData(tag, algorithm, dataToSign).then(setSignedData);
-  }
+      getPublicKeyByTag(tag)
+      .then((k)=>{
+        console.log('Got Key from Store')
+        return k
+      }).catch(()=>{
+        return genKeysAndSaveToKeychain(tag, false)
+      })
+      .then(setPublicKey)
 
-  console.log({ tag, dataToSign, publicKey, signedData })
+    //genKeysAndSaveToKeychain(tag, false).then(setPublicKey);
+    signData(dataToSign,tag, algorithm).then(setSignedData);
+  }
+    console.log({ tag, dataToSign, publicKey, signedData })
 
   return (
     <View style={styles.container}>
