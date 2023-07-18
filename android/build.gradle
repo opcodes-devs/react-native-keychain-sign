@@ -19,10 +19,10 @@ def safeExtGet(prop, fallback) {
 }
 
 android {
-    compileSdkVersion safeExtGet('KeychainSign_compileSdkVersion', 31)
+    compileSdkVersion safeExtGet('KeychainSign_compileSdkVersion', 28)
     defaultConfig {
-        minSdkVersion safeExtGet('KeychainSign_minSdkVersion', 31)
-        targetSdkVersion safeExtGet('KeychainSign_targetSdkVersion', 31)
+        minSdkVersion safeExtGet('KeychainSign_minSdkVersion', 28)
+        targetSdkVersion safeExtGet('KeychainSign_targetSdkVersion',28)
         versionCode 1
         versionName "1.0"
 
